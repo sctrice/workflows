@@ -14,6 +14,8 @@ var jsSource = [
     'components/scripts/template.js'
 ];
 var sassSource = ['components/sass/style.scss'];
+var htmlSource = ['builds/development/*.html'];
+var jsonSource = ['builds/development/js/*.json'];
 
 gulp.task('log', function(){
     gutil.log('workflows are awesome');
@@ -52,6 +54,8 @@ gulp.task('watch', function() {
     gulp.watch(coffeeSource, ['coffee']);
     gulp.watch(jsSource, ['js']);
     gulp.watch('components/sass/*.scss', ['compass']);
+    gulp.watch(htmlSource, ['html']);
+    gulp.watch(jsonSource, ['json']);
 });
 
 /* Reload page when files change in the specified root directory. */
@@ -62,4 +66,14 @@ gulp.task('connect', function(){
     });
 });
 
-gulp.task('default', ['coffee', 'js', /*'compass',*/ 'connect', 'watch']);
+gulp.task('html', function(){
+    gulp.src(htmlSource)
+    .pipe(connect.reload());
+});
+
+gulp.task('json', function(){
+    gulp.src(jsonSource)
+    .pipe(connect.reload());
+});
+
+gulp.task('default', ['html', 'json','coffee', 'js', /*'compass',*/ 'connect', 'watch']);
