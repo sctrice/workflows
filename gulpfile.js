@@ -4,6 +4,7 @@ var coffee = require('gulp-coffee');
 var concat = require('gulp-concat');
 var browserify = require('gulp-browserify');
 var compass = require('gulp-compass');
+var connect = require('gulp-connect');
 
 var coffeeSource = ['components/coffee/tagline.coffee'];
 var jsSource = [
@@ -25,12 +26,14 @@ gulp.task('coffee', function() {
         .pipe(gulp.dest('components/scripts'));
 });
 
+/* Combine all javascript files into a single javascript file. */
 gulp.task('js', function() {
     /* concatenate all of the js files into one file. */
     gulp.src(jsSource)
     .pipe(concat('script.js'))
     .pipe(browserify())
-    .pipe(gulp.dest('builds/development/js'));
+    .pipe(gulp.dest('builds/development/js'))
+    .pipe(connect.reload());
 });
 
 gulp.task('compass', function() {
@@ -41,8 +44,9 @@ gulp.task('compass', function() {
             style: 'expanded'
         })
             .on('error', gutil.log))
-        .pipe(gulp.dest('builds/development/css'));
-});
+        .pipe(gulp.dest('builds/development/css'))
+        .pipe(connect.reload());
+    });
 
 gulp.task('watch', function() {
     gulp.watch(coffeeSource, ['coffee']);
@@ -50,4 +54,12 @@ gulp.task('watch', function() {
     gulp.watch('components/sass/*.scss', ['compass']);
 });
 
-gulp.task('default', ['coffee', 'js', 'compass']);
+/* Reload page when files change in the specified root directory. */
+gulp.task('connect', function(){
+    connect.server({
+        root: 'builds/development/',
+        livereload: true
+    });
+});
+
+gulp.task('default', ['coffee', 'js', /*'compass',*/ 'connect', 'watch']);
